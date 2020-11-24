@@ -16,6 +16,11 @@ const MATCH_DROPBOX_URL = /www\.dropbox\.com\/.+/
 const MATCH_CLOUDFLARE_STREAM = /https:\/\/watch\.cloudflarestream\.com\/([a-z0-9]+)/
 const REPLACE_CLOUDFLARE_STREAM = 'https://videodelivery.net/{id}/manifest/video.m3u8'
 
+const supportsHLS = () => {
+  var video = document.createElement('video');
+  return Boolean(video.canPlayType('application/vnd.apple.mpegURL') || video.canPlayType('audio/mpegurl'))
+}
+
 export default class FilePlayer extends Component {
   static displayName = 'FilePlayer'
   static canPlay = canPlay.file
@@ -128,7 +133,7 @@ export default class FilePlayer extends Component {
     if (this.props.config.forceHLS) {
       return true
     }
-    if (IS_IOS) {
+    if (supportsHLS()) {
       return false
     }
     return HLS_EXTENSIONS.test(url) || MATCH_CLOUDFLARE_STREAM.test(url)
